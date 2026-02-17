@@ -1,4 +1,4 @@
-# 🤖 AI-Powered E-Commerce Support Agent
+# AI-Powered E-Commerce Support Agent
 
 A production-ready, multi-layered AI customer support system designed for e-commerce platforms.
 
@@ -15,7 +15,7 @@ This system intelligently handles:
 
 ---
 
-# 📐 System Architecture
+#  System Architecture
 
 The architecture follows an **Orchestrator–Worker pattern** divided into four layers:
 
@@ -66,7 +66,7 @@ graph TD
 
 ---
 
-# 🛡 Layer 1: Interface & Guardrails (The Gatekeeper)
+# Layer 1: Interface & Guardrails (The Gatekeeper)
 
 This layer protects the system before any data reaches the LLM.
 
@@ -190,7 +190,7 @@ Triggered when:
 
 ---
 
-# 🔄 Reasoning Loop
+#  Reasoning Loop
 
 The system follows:
 
@@ -200,71 +200,47 @@ Observe → Classify → Evaluate → Validate → Act → Synthesize
 
 ---
 
-# 📊 Process Flows
-
 ---
 
-## Flow A: Informational Query (RAG)
+## 🛠️ Tech Stack
 
-**User:**  
-"What is your return policy for electronics?"
-
-**Steps:**
-1. Intent → `POLICY_QUERY`
-2. Route → RAG Worker
-3. Retrieve relevant chunks
-4. Generate response
-
-**Output Example:**
-> Electronics can be returned within 15 days if unopened and in original packaging.
+| Component | Technology | Justification |
+| :--- | :--- | :--- |
+| **Framework** | **LangGraph** | Enables cyclic flows (loops) essential for multi-turn conversations and state management. |
+| **LLM** | **Gemini 1.5 Pro / GPT-4o** | High reasoning capability to minimize hallucinations and handle complex routing. |
+| **Vector DB** | **Pinecone / Milvus** | Low-latency retrieval of policy documents for RAG. |
+| **Validation** | **Pydantic & RegEx** | Enforces strict data structures to prevent API errors. |
+| **Backend** | **FastAPI** | High-performance async framework for handling concurrent agent requests. |
+| **Guardrails** | **NeMo Guardrails** | Ensures the agent stays on topic and safe. |
 
 ---
+# 📂 Project File Structure
 
-## Flow B: Operational Query (Happy Path)
+The project is organized to separate the **API Interface**, **Agent Logic**, and **Data Sources**.
 
-**User:**  
-"Check status for Order #ABC-123"
-
-**Steps:**
-1. Intent → `ORDER_STATUS`
-2. Extract order_id = `ABC-123`
-3. Validate format
-4. Call API
-5. Format response
-
-**Output Example:**
-> Your order #ABC-123 is Out for Delivery and will arrive by 5 PM.
-
----
-
-## Flow C: Missing Information (Loop)
-
-**User:**  
-"Where is my order?"
-
-**Steps:**
-1. Intent → `ORDER_STATUS`
-2. No order_id found
-3. Ask follow-up
-
-**Agent:**
-> Please provide your Order ID.
-
-(User replies with ID → System loops back to Flow B)
-
----
-
-## Flow D: Escalation
-
-**User:**  
-"I’ve asked three times and my order is still missing! I want a refund!"
-
-**Steps:**
-1. Sentiment analysis detects high negativity
-2. Trigger `ESCALATION_PROTOCOL`
-3. Create CRM ticket
-
-**Response:**
-> I apologize for the frustration. I am escalating this to a human specialist. Your ticket ID is #999.
-
----
+```text
+ecommerce-agent/
+├── app/
+│   ├── __init__.py
+│   ├── main.py              # 🚀 Entry point: FastAPI server setup
+│   ├── api/                 # 🔌 API Routes
+│   │   ├── chat.py          # Endpoint for chat widget
+│   │   └── mock_oms.py      # Simulated Order Management System (OMS)
+│   ├── agent/               # 🧠 The Cognitive Layer
+│   │   ├── graph.py         # LangGraph state machine definition
+│   │   ├── router.py        # Intent classification logic
+│   │   ├── tools.py         # Tool definitions (Order API, RAG Search)
+│   │   ├── state.py         # State schema (AgentState)
+│   │   └── prompts.py       # System prompts for Router & Generator
+│   └── utils/               # 🛠 Helpers
+│       ├── guardrails.py    # PII redaction & input sanitization
+│       └── ingest.py        # Script to load policies into Vector DB
+├── data/                    # 📄 Raw Knowledge Base
+│   └── policies.txt         # Text file containing return policies/FAQs
+├── chroma_db/               # 🗄️ Persisted Vector Database (Generated)
+├── tests/                   # 🧪 Red Teaming & Unit Tests
+│   ├── test_agent.py
+│   └── test_security.py
+├── .env                     # 🔑 API Keys (OpenAI, Pinecone, Database URL)
+├── requirements.txt         # 📦 Python Dependencies
+└── README.md                # 📖 Documentation
