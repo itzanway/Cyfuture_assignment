@@ -48,6 +48,7 @@ The system follows a **Router-Controller Pattern** where a central "Brain" class
     ```bash
     git clone [https://github.com/itzanway/Cyfuture_assignment.git](https://github.com/itzanway/Cyfuture_assignment.git)
     cd Cyfuture_assignment
+    cd ShopAssistAI
     ```
 
 2.  **Create a Virtual Environment**
